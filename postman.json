@@ -1,0 +1,56 @@
+{
+  "info": {
+    "name": "Dynamic Pricing Engine",
+    "description": "API collection for the Dynamic Pricing Engine — scrape Amazon prices, queue products, monitor sync status.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "productId", "value": "550e8400-e29b-41d4-a716-446655440000" },
+    { "key": "amazonUrl", "value": "https://www.amazon.com/dp/B08N5WRWNW" }
+  ],
+  "item": [
+    {
+      "name": "Scrape (sync)",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/scrape",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{ \"url\": \"{{amazonUrl}}\" }" }
+      }
+    },
+    {
+      "name": "Scrape (queue)",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/queue/scrape",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{ \"productId\": \"{{productId}}\", \"amazonUrl\": \"{{amazonUrl}}\", \"margin\": 25 }" }
+      }
+    },
+    {
+      "name": "Cron Sync All",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/cron/sync?margin=25",
+        "header": [{ "key": "Authorization", "value": "Bearer {{cronSecret}}" }]
+      }
+    },
+    {
+      "name": "Queue Status",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/queue/status" }
+    },
+    {
+      "name": "Health Check",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/health" }
+    },
+    {
+      "name": "Products List",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/products" }
+    },
+    {
+      "name": "Dashboard",
+      "request": { "method": "GET", "url": "{{baseUrl}}/" }
+    }
+  ]
+}
