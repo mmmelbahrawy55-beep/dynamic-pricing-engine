@@ -1,15 +1,23 @@
 import type { Metadata } from 'next'
+import { ThemeProvider } from '@/lib/contexts/theme-context'
+import { AuthProvider } from '@/lib/contexts/auth-context'
 import './globals.css'
 
 export const metadata: Metadata = {
   title: 'ELITE — Premium Fashion',
-  description: 'Premium clothing collection for the modern individual',
+  description: 'Premium streetwear for the bold. Redefining fashion one stitch at a time.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body>
+        <ThemeProvider>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </ThemeProvider>
+      </body>
     </html>
   )
 }
