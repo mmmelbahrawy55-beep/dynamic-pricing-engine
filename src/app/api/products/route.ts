@@ -20,7 +20,7 @@ export async function GET() {
       .from('products')
       .select('*', { count: 'exact', head: true })
 
-    return NextResponse.json({ products, total })
+    return NextResponse.json({ products, total, debug: { url: process.env.SUPABASE_URL?.substring(0, 30), keyLen: process.env.SUPABASE_SERVICE_ROLE_KEY?.length, ts: Date.now() } })
   } catch (err) {
     logger.error({ err }, 'Failed to fetch products')
     return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 })
