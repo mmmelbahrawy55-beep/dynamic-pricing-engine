@@ -1,0 +1,17 @@
+services:
+  - type: worker
+    name: pricing-worker
+    runtime: docker
+    repo: https://github.com/mmmelbahrawy55-beep/dynamic-pricing-engine
+    branch: main
+    dockerCommand: npm run worker
+    healthCheckPath: /api/health
+    envVars:
+      - key: REDIS_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: NODE_ENV
+        value: production

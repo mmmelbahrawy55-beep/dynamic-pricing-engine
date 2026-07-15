@@ -26,3 +26,15 @@ CREATE TABLE sync_logs (
 
 CREATE INDEX idx_sync_logs_product_id ON sync_logs (product_id);
 CREATE INDEX idx_sync_logs_created_at ON sync_logs (created_at);
+
+CREATE TABLE price_history (
+  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  product_id    UUID NOT NULL REFERENCES products (id) ON DELETE CASCADE,
+  raw_price     NUMERIC(10,2),
+  our_price     NUMERIC(10,2),
+  margin_percentage NUMERIC(5,2),
+  recorded_at   TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_price_history_product_id ON price_history (product_id);
+CREATE INDEX idx_price_history_recorded_at ON price_history (recorded_at);

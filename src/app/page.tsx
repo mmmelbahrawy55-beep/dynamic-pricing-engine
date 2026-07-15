@@ -21,29 +21,61 @@ interface Product {
 }
 
 export default async function Dashboard() {
-  const { data: products, error } = await supabase
-    .from('products')
-    .select('id, amazon_url, product_name, raw_price, our_price, margin_percentage, sync_status, updated_at')
-    .order('updated_at', { ascending: false })
-    .limit(50)
+  const [productsResult, countResult, statsResult] = await Promise.all([
+    supabase
+      .from('products')
+      .select('id, amazon_url, product_name, raw_price, our_price, margin_percentage, sync_status, updated_at')
+      .order('updated_at', { ascending: false })
+      .limit(50),
+    supabase.from('products').select('*', { count: 'exact', head: true }),
+    supabase
+      .from('products')
+      .select('sync_status, margin_percentage'),
+  ])
 
-  const { count: total } = await supabase
-    .from('products')
-    .select('*', { count: 'exact', head: true })
-
-  const list = (products ?? []) as unknown as Product[]
+  const list = (productsResult.data ?? []) as unknown as Product[]
+  const total = countResult.count ?? 0
+  const allProducts = (statsResult.data ?? []) as { sync_status: string; margin_percentage: number | null }[]
+  const synced = allProducts.filter((p) => p.sync_status === 'synced').length
+  const failed = allProducts.filter((p) => p.sync_status === 'failed').length
+  const margins = allProducts
+    .map((p) => p.margin_percentage)
+    .filter((m): m is number => m != null)
+  const avgMargin = margins.length > 0
+    ? margins.reduce((a, b) => a + b, 0) / margins.length
+    : null
 
   return (
     <div style={{ maxWidth: 1200, margin: '0 auto', padding: 24, background: '#0a0a0a', color: '#e5e5e5', fontFamily: 'system-ui, -apple-system, sans-serif', minHeight: '100vh' }}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <div>
           <h1 style={{ margin: 0, fontSize: 24, fontWeight: 600 }}>Dynamic Pricing Engine</h1>
           <p style={{ margin: '4px 0 0', color: '#888', fontSize: 14 }}>
-            {total ?? 0} products
-            {error && <span style={{ color: '#f87171', marginLeft: 8 }}>· DB error</span>}
+            {total} products · {synced} synced · {failed} failed
+            {avgMargin != null && ` · avg margin ${avgMargin.toFixed(1)}%`}
+            {productsResult.error && <span style={{ color: '#f87171', marginLeft: 8 }}>· DB error</span>}
           </p>
         </div>
       </header>
+
+      {list.length > 0 && (
+        <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>
+          {[
+            { label: 'Total Products', value: total, color: '#60a5fa' },
+            { label: 'Synced', value: synced, color: '#4ade80' },
+            { label: 'Failed', value: failed, color: '#f87171' },
+            { label: 'Avg Margin', value: avgMargin != null ? `${avgMargin.toFixed(1)}%` : '—', color: '#fbbf24' },
+          ].map((stat) => (
+            <div key={stat.label} style={{
+              background: '#141414', borderRadius: 8, border: '1px solid #1f1f1f',
+              padding: '12px 20px', minWidth: 140,
+            }}>
+              <div style={{ fontSize: 12, color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{stat.label}</div>
+              <div style={{ fontSize: 28, fontWeight: 600, color: stat.color, marginTop: 4 }}>{stat.value}</div>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div style={{ overflowX: 'auto', borderRadius: 8, border: '1px solid #1f1f1f' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
