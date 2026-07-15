@@ -2,36 +2,38 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { scrapeAmazon } from '@/lib/scrapers/amazon'
 import { isScrapeError } from '@/lib/types'
-import { syncProductPrice } from '@/lib/services/product-sync'
 import { scrapeUrlSchema } from '@/lib/validation'
-import { badRequest, fromZod } from '@/lib/errors'
+import { badRequest } from '@/lib/errors'
 import { logger } from '@/lib/logger'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
 
 export async function POST(request: NextRequest) {
-  let body: { urls: string[]; margin: number }
+  let json: unknown
   try {
-    body = await request.json()
+    json = await request.json()
   } catch {
     return badRequest('Invalid JSON body')
   }
 
-  if (!Array.isArray(body.urls) || body.urls.length === 0) {
+  const input = json as { urls?: unknown; margin?: number }
+
+  if (!Array.isArray(input.urls) || input.urls.length === 0) {
     return badRequest('urls must be a non-empty array')
   }
-  if (body.urls.length > 10) {
+  if (input.urls.length > 10) {
     return badRequest('Maximum 10 URLs per batch')
   }
 
-  const margin = body.margin ?? 25
+  const margin = input.margin ?? 25
   const results: { url: string; status: string; productName?: string; rawPrice?: number; ourPrice?: number; error?: string }[] = []
 
-  for (const url of body.urls) {
+  const urls = input.urls.filter((u): u is string => typeof u === 'string')
+  for (const url of urls) {
     const parsed = scrapeUrlSchema.safeParse({ url, margin })
     if (!parsed.success) {
-      results.push({ url, status: 'invalid', error: parsed.error.errors[0]?.message })
+      results.push({ url, status: 'invalid', error: parsed.error.issues[0]?.message })
       continue
     }
 
