@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { getSupabase } from '@/lib/supabase'
 import { scrapeAmazon } from '@/lib/scrapers/amazon'
 import { isScrapeError } from '@/lib/types'
 import { scrapeUrlSchema } from '@/lib/validation'
@@ -29,6 +29,7 @@ export async function POST(request: NextRequest) {
   const margin = input.margin ?? 25
   const results: { url: string; status: string; productName?: string; rawPrice?: number; ourPrice?: number; error?: string }[] = []
 
+  const supabase = getSupabase()
   const urls = input.urls.filter((u): u is string => typeof u === 'string')
   for (const url of urls) {
     const parsed = scrapeUrlSchema.safeParse({ url, margin })

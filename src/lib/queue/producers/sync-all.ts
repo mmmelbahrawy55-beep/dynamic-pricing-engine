@@ -1,4 +1,4 @@
-import { supabase } from '../../supabase'
+import { getSupabase } from '../../supabase'
 import { enqueueScrapeProduct } from './scrape-product'
 
 interface SyncAllResult {
@@ -8,6 +8,7 @@ interface SyncAllResult {
 }
 
 export async function enqueueSyncAll(marginPercentage = 25): Promise<SyncAllResult> {
+  const supabase = getSupabase()
   const now = new Date().toISOString()
 
   const { data: products, error } = await supabase

@@ -1,10 +1,11 @@
-import { supabase } from '../supabase'
+import { getSupabase } from '../supabase'
 import { scrapeAmazon } from '../scrapers/amazon'
 import { isScrapeError } from '../types'
 import { syncProductPrice } from '../services/product-sync'
 import type { ScrapeProductPayload } from './jobs'
 
 async function markFailed(productId: string, message: string): Promise<void> {
+  const supabase = getSupabase()
   await supabase
     .from('products')
     .update({ sync_status: 'failed', updated_at: new Date().toISOString() })

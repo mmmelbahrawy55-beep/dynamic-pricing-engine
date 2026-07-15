@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server'
+import { getSupabase } from '@/lib/supabase'
 import { logger } from '@/lib/logger'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
   try {
-    const { supabase } = await import('@/lib/supabase')
+    const supabase = getSupabase()
 
     const { data: products, error } = await supabase
       .from('products')

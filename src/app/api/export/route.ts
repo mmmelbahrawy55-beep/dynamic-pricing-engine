@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { getSupabase } from '@/lib/supabase'
 import { logger } from '@/lib/logger'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
   try {
+    const supabase = getSupabase()
     const { data: products, error } = await supabase
       .from('products')
       .select('id, amazon_url, product_name, raw_price, our_price, margin_percentage, sync_status, created_at, updated_at')

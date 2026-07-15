@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+import { getSupabase } from '@/lib/supabase'
 
 export const dynamic = 'force-dynamic'
 
@@ -21,6 +21,7 @@ interface Product {
 }
 
 export default async function Dashboard() {
+  const supabase = getSupabase()
   const [productsResult, countResult, statsResult] = await Promise.all([
     supabase
       .from('products')

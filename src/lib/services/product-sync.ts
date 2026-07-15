@@ -1,4 +1,4 @@
-import { supabase } from '../supabase'
+import { getSupabase } from '../supabase'
 import { calculateOurPrice } from '../pricing'
 
 export interface SyncResult {
@@ -19,6 +19,7 @@ export async function syncProductPrice(
   rawPrice: number,
   marginPercentage: number,
 ): Promise<SyncResult> {
+  const supabase = getSupabase()
   const ourPrice = calculateOurPrice(rawPrice, marginPercentage)
 
   try {

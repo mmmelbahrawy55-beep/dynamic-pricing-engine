@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { getSupabase } from '@/lib/supabase'
 import { logger } from '@/lib/logger'
 
 export const dynamic = 'force-dynamic'
@@ -20,6 +20,7 @@ export async function GET(
   const { id } = params
 
   try {
+    const supabase = getSupabase()
     const { data: logs, error } = await supabase
       .from('sync_logs')
       .select('created_at, message')

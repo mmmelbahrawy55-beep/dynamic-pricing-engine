@@ -6,7 +6,8 @@ export async function GET() {
   const checks: Record<string, string> = {}
 
   try {
-    const { supabase } = await import('@/lib/supabase')
+    const { getSupabase } = await import('@/lib/supabase')
+    const supabase = getSupabase()
     const { error } = await supabase.from('products').select('id').limit(1)
     checks.supabase = error ? 'unhealthy' : 'healthy'
   } catch {
