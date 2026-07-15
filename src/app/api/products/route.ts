@@ -14,13 +14,15 @@ export async function GET() {
       .order('updated_at', { ascending: false })
       .limit(50)
 
-    if (error) throw error
+    if (error) {
+      return NextResponse.json({ error: error.message, code: error.code, details: error.details, hint: error.hint })
+    }
 
-    const { count: total } = await supabase
+    const { count: total, error: countError } = await supabase
       .from('products')
       .select('*', { count: 'exact', head: true })
 
-    return NextResponse.json({ products, total, debug: { url: process.env.SUPABASE_URL?.substring(0, 30), keyLen: process.env.SUPABASE_SERVICE_ROLE_KEY?.length, ts: Date.now() } })
+    return NextResponse.json({ products, total, countError: countError?.message })
   } catch (err) {
     logger.error({ err }, 'Failed to fetch products')
     return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 })
