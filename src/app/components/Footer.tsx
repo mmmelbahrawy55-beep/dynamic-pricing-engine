@@ -1,46 +1,33 @@
 'use client'
-import { useTheme } from '@/lib/contexts/theme-context'
+import Link from 'next/link'
 
 export function Footer() {
-  const { theme } = useTheme()
-
   return (
-    <footer className="border-t border-white/5 py-12 mt-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+    <footer style={{ borderTop: '1px solid var(--border)' }} className="mt-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          <div>
-            <h3 className="font-bold text-lg tracking-wider mb-4">ELITE</h3>
-            <p className="text-sm text-zinc-500 leading-relaxed">
+          <div className="col-span-2 md:col-span-1">
+            <h3 className="text-lg font-bold tracking-wider mb-4" style={{ color: 'var(--text)' }}>ELITE</h3>
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               Premium streetwear for the bold. Redefining fashion one stitch at a time.
             </p>
           </div>
-          <div>
-            <h4 className="text-sm font-semibold mb-3">Shop</h4>
-            <ul className="space-y-2 text-sm text-zinc-500">
-              <li><a href="#" className="hover:text-white transition-colors">Hoodies</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">T-Shirts</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Jackets</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Accessories</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="text-sm font-semibold mb-3">Support</h4>
-            <ul className="space-y-2 text-sm text-zinc-500">
-              <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Shipping</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Returns</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">FAQ</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="text-sm font-semibold mb-3">Legal</h4>
-            <ul className="space-y-2 text-sm text-zinc-500">
-              <li><a href="#" className="hover:text-white transition-colors">Privacy</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Terms</a></li>
-            </ul>
-          </div>
+          {[
+            { title: 'Shop', links: ['Hoodies', 'T-Shirts', 'Jackets', 'Accessories'] },
+            { title: 'Support', links: ['Contact', 'Shipping', 'Returns', 'FAQ'] },
+            { title: 'Legal', links: ['Privacy', 'Terms'] },
+          ].map((col) => (
+            <div key={col.title}>
+              <h4 className="text-sm font-semibold mb-3" style={{ color: 'var(--text)' }}>{col.title}</h4>
+              <ul className="space-y-2 text-sm" style={{ color: 'var(--text-muted)' }}>
+                {col.links.map((l) => (
+                  <li key={l}><a href="#" className="hover:opacity-80 transition-opacity">{l}</a></li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
-        <div className="border-t border-white/5 mt-10 pt-6 text-center text-sm text-zinc-600">
+        <div className="mt-12 pt-6 text-center text-sm" style={{ borderTop: '1px solid var(--border)', color: 'var(--text-muted)' }}>
           &copy; 2026 ELITE. All rights reserved.
         </div>
       </div>

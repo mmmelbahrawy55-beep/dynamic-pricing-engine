@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { ThemeProvider } from '@/lib/contexts/theme-context'
 import { AuthProvider } from '@/lib/contexts/auth-context'
+import { CartProvider } from '@/lib/contexts/cart-context'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -14,7 +15,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <ThemeProvider>
           <AuthProvider>
-            {children}
+            <CartProvider>
+              {children}
+            </CartProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

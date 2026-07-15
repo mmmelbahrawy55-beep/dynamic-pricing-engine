@@ -17,16 +17,16 @@ export default function AdminOrdersPage() {
 
   return (
     <div className="min-h-screen">
-      <div className="sticky top-0 z-30 backdrop-blur-xl border-b border-white/5">
+      <div className="sticky top-0 z-30 backdrop-blur-xl" style={{ borderBottom: '1px solid var(--border)', background: 'color-mix(in srgb, var(--bg) 80%, transparent)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center gap-4">
-          <Link href="/admin" className="p-2 rounded-lg hover:bg-white/10 transition-colors">
+          <Link href="/admin" className="p-2 rounded-lg transition-colors hover:bg-white/10" style={{ color: 'var(--text)' }}>
             <ArrowLeft size={18} />
           </Link>
-          <span className="text-lg font-bold">Orders</span>
+          <span className="text-lg font-bold" style={{ color: 'var(--text)' }}>Orders</span>
         </div>
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        <div className="text-center py-20 text-zinc-500">
+        <div className="text-center py-20" style={{ color: 'var(--text-muted)' }}>
           <p className="text-lg">No orders yet</p>
           <p className="text-sm mt-2">Orders will appear here once customers start purchasing</p>
         </div>

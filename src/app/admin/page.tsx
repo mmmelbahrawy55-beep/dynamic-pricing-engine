@@ -24,50 +24,46 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen">
-      <div className="sticky top-0 z-30 backdrop-blur-xl border-b border-white/5">
+      <div className="sticky top-0 z-30 backdrop-blur-xl" style={{ borderBottom: '1px solid var(--border)', background: 'color-mix(in srgb, var(--bg) 80%, transparent)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href="/" className="text-lg font-bold tracking-wider">ELITE</Link>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-zinc-400">Admin</span>
+            <Link href="/" className="text-lg font-bold tracking-wider" style={{ color: 'var(--text)' }}>ELITE</Link>
+            <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'var(--bg-elevated)', color: 'var(--text-muted)' }}>Admin</span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-sm text-zinc-400">{user.name}</span>
-            <button onClick={logout} className="p-2 rounded-lg hover:bg-white/10 transition-colors">
+            <span className="text-sm" style={{ color: 'var(--text-muted)' }}>{user.name}</span>
+            <button onClick={logout} className="p-2 rounded-lg transition-colors hover:bg-white/10" style={{ color: 'var(--text)' }}>
               <LogOut size={16} />
             </button>
           </div>
         </div>
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        <h1 className="text-2xl font-bold mb-8">Dashboard</h1>
+        <h1 className="text-2xl font-bold mb-8" style={{ color: 'var(--text)' }}>Dashboard</h1>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
           {stats.map((s) => (
-            <div key={s.label} className="bg-zinc-900/50 rounded-2xl p-5 border border-white/5">
+            <div key={s.label} className="rounded-2xl p-5" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
               <div className="flex items-center justify-between mb-3">
-                <s.icon size={20} className="text-zinc-400" />
-                <span className="text-xs text-emerald-400">{s.change}</span>
+                <s.icon size={20} style={{ color: 'var(--text-muted)' }} />
+                <span className="text-xs" style={{ color: '#10b981' }}>{s.change}</span>
               </div>
-              <p className="text-2xl font-bold">{s.value}</p>
-              <p className="text-xs text-zinc-500 mt-1">{s.label}</p>
+              <p className="text-2xl font-bold" style={{ color: 'var(--text)' }}>{s.value}</p>
+              <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>{s.label}</p>
             </div>
           ))}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Link
-            href="/admin/products"
-            className="bg-zinc-900/50 rounded-2xl p-6 border border-white/5 hover:border-white/20 transition-all group"
-          >
-            <Package size={24} className="mb-3 text-zinc-400 group-hover:text-white transition-colors" />
-            <h3 className="font-semibold mb-1">Products</h3>
-            <p className="text-sm text-zinc-500">Manage your catalog, inventory, and pricing</p>
+          <Link href="/admin/products" className="rounded-2xl p-6 transition-all group"
+            style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+            <Package size={24} className="mb-3 transition-colors group-hover:opacity-80" style={{ color: 'var(--text-muted)' }} />
+            <h3 className="font-semibold mb-1" style={{ color: 'var(--text)' }}>Products</h3>
+            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Manage your catalog, inventory, and pricing</p>
           </Link>
-          <Link
-            href="/admin/orders"
-            className="bg-zinc-900/50 rounded-2xl p-6 border border-white/5 hover:border-white/20 transition-all group"
-          >
-            <CreditCard size={24} className="mb-3 text-zinc-400 group-hover:text-white transition-colors" />
-            <h3 className="font-semibold mb-1">Orders</h3>
-            <p className="text-sm text-zinc-500">View and manage customer orders</p>
+          <Link href="/admin/orders" className="rounded-2xl p-6 transition-all group"
+            style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+            <CreditCard size={24} className="mb-3 transition-colors group-hover:opacity-80" style={{ color: 'var(--text-muted)' }} />
+            <h3 className="font-semibold mb-1" style={{ color: 'var(--text)' }}>Orders</h3>
+            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>View and manage customer orders</p>
           </Link>
         </div>
       </div>
