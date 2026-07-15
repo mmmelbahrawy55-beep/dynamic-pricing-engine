@@ -1,30 +1,26 @@
 import { NextResponse } from 'next/server'
-import { getSupabase } from '@/lib/supabase'
-import { logger } from '@/lib/logger'
+import { createClient } from '@supabase/supabase-js'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
-  try {
-    const supabase = getSupabase()
+  const url = process.env.SUPABASE_URL!
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY!
+  const supabase = createClient(url, key)
 
-    const { data: products, error } = await supabase
-      .from('products')
-      .select('id, amazon_url, product_name, raw_price, our_price, margin_percentage, sync_status, updated_at')
-      .order('updated_at', { ascending: false })
-      .limit(50)
+  const { data: products, error } = await supabase
+    .from('products')
+    .select('id, amazon_url, product_name, raw_price, our_price, margin_percentage, sync_status, updated_at')
+    .order('updated_at', { ascending: false })
+    .limit(50)
 
-    if (error) {
-      return NextResponse.json({ error: error.message, code: error.code, details: error.details, hint: error.hint })
-    }
-
-    const { count: total, error: countError } = await supabase
-      .from('products')
-      .select('*', { count: 'exact', head: true })
-
-    return NextResponse.json({ products, total, countError: countError?.message })
-  } catch (err) {
-    logger.error({ err }, 'Failed to fetch products')
-    return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 })
+  if (error) {
+    return NextResponse.json({ error: error.message })
   }
+
+  const { count: total } = await supabase
+    .from('products')
+    .select('*', { count: 'exact', head: true })
+
+  return NextResponse.json({ products, total })
 }

@@ -1,4 +1,4 @@
-import { getSupabase } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
 
 export const dynamic = 'force-dynamic'
 
@@ -21,7 +21,7 @@ interface Product {
 }
 
 export default async function Dashboard() {
-  const supabase = getSupabase()
+  const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
   const [productsResult, countResult, statsResult] = await Promise.all([
     supabase
       .from('products')

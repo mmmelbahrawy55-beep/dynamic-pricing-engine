@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
 
 export const dynamic = 'force-dynamic'
 
@@ -6,8 +7,7 @@ export async function GET() {
   const checks: Record<string, string> = {}
 
   try {
-    const { getSupabase } = await import('@/lib/supabase')
-    const supabase = getSupabase()
+    const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
     const { error } = await supabase.from('products').select('id').limit(1)
     checks.supabase = error ? 'unhealthy' : 'healthy'
   } catch {
