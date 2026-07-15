@@ -6,7 +6,7 @@ import { getNextUserAgent } from '../user-agents'
 import { callWithBreaker, CircuitBreakerOpenError } from '../circuit-breaker'
 import { reportError } from '../sentry'
 
-const TIMEOUT_MS = 15_000
+const TIMEOUT_MS = 8_000
 const MAX_REDIRECTS = 3
 
 const SELECTORS = {
