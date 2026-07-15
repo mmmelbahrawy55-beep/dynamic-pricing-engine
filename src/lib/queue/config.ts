@@ -5,10 +5,12 @@ import type { ScrapeProductPayload } from './jobs'
 const REDIS_URL = process.env.REDIS_URL ?? 'redis://localhost:6379'
 
 function createConnection(): Redis {
+  const needsTls = REDIS_URL.includes('upstash.io') || REDIS_URL.includes('redislabs.com')
   return new Redis(REDIS_URL, {
     maxRetriesPerRequest: null,
     enableOfflineQueue: false,
     lazyConnect: true,
+    ...(needsTls ? { tls: {} } : {}),
   })
 }
 
