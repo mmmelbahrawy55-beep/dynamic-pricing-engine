@@ -1,153 +1,95 @@
-import { createClient } from '@supabase/supabase-js'
+'use client'
+import { useState, useMemo } from 'react'
+import { products, categories, type Product } from '@/lib/store-data'
+import ProductCard from './components/ProductCard'
+import CartDrawer from './components/CartDrawer'
 
-export const dynamic = 'force-dynamic'
+export default function StorePage() {
+  const [activeCategory, setActiveCategory] = useState('all')
+  const [cartOpen, setCartOpen] = useState(false)
+  const [cart, setCart] = useState<{ product: Product; size: string; color: string; quantity: number }[]>([])
 
-const statusColor: Record<string, string> = {
-  pending: 'text-yellow-400',
-  syncing: 'text-blue-400',
-  synced: 'text-green-400',
-  failed: 'text-red-400',
-}
+  const filtered = useMemo(
+    () => activeCategory === 'all' ? products : products.filter((p) => p.category === activeCategory),
+    [activeCategory],
+  )
 
-interface Product {
-  id: string
-  amazon_url: string
-  product_name: string | null
-  raw_price: number | null
-  our_price: number | null
-  margin_percentage: number | null
-  sync_status: string
-  updated_at: string
-}
+  const addToCart = (product: Product, size: string, color: string) => {
+    setCart((prev) => {
+      const existing = prev.find((i) => i.product.id === product.id && i.size === size && i.color === color)
+      if (existing) {
+        return prev.map((i) => i === existing ? { ...i, quantity: i.quantity + 1 } : i)
+      }
+      return [...prev, { product, size, color, quantity: 1 }]
+    })
+  }
 
-export default async function Dashboard() {
-  const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
-  const [productsResult, countResult, statsResult] = await Promise.all([
-    supabase
-      .from('products')
-      .select('id, amazon_url, product_name, raw_price, our_price, margin_percentage, sync_status, updated_at')
-      .order('updated_at', { ascending: false })
-      .limit(50),
-    supabase.from('products').select('*', { count: 'exact', head: true }),
-    supabase
-      .from('products')
-      .select('sync_status, margin_percentage'),
-  ])
+  const updateQty = (index: number, qty: number) => {
+    setCart((prev) => qty <= 0 ? prev.filter((_, i) => i !== index) : prev.map((i, idx) => idx === index ? { ...i, quantity: qty } : i))
+  }
 
-  const list = (productsResult.data ?? []) as unknown as Product[]
-  const total = countResult.count ?? 0
-  const allProducts = (statsResult.data ?? []) as { sync_status: string; margin_percentage: number | null }[]
-  const synced = allProducts.filter((p) => p.sync_status === 'synced').length
-  const failed = allProducts.filter((p) => p.sync_status === 'failed').length
-  const margins = allProducts
-    .map((p) => p.margin_percentage)
-    .filter((m): m is number => m != null)
-  const avgMargin = margins.length > 0
-    ? margins.reduce((a, b) => a + b, 0) / margins.length
-    : null
+  const cartCount = cart.reduce((a, i) => a + i.quantity, 0)
+  const cartTotal = cart.reduce((a, i) => a + i.product.price * i.quantity, 0)
 
   return (
-    <div style={{ maxWidth: 1200, margin: '0 auto', padding: 24, background: '#0a0a0a', color: '#e5e5e5', fontFamily: 'system-ui, -apple-system, sans-serif', minHeight: '100vh' }}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <div>
-          <h1 style={{ margin: 0, fontSize: 24, fontWeight: 600 }}>Dynamic Pricing Engine</h1>
-          <p style={{ margin: '4px 0 0', color: '#888', fontSize: 14 }}>
-            {total} products · {synced} synced · {failed} failed
-            {avgMargin != null && ` · avg margin ${avgMargin.toFixed(1)}%`}
-            {productsResult.error && <span style={{ color: '#f87171', marginLeft: 8 }}>· DB error</span>}
-          </p>
+    <div className="min-h-screen bg-dark-950">
+      <header className="sticky top-0 z-50 bg-dark-950/90 backdrop-blur-lg border-b border-dark-800">
+        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-8">
+            <h1 className="text-xl font-bold tracking-widest text-white">ELITE</h1>
+            <nav className="hidden md:flex gap-6">
+              {categories.map((cat) => (
+                <button key={cat.id} onClick={() => setActiveCategory(cat.id)}
+                  className={`text-sm tracking-wider transition-colors ${activeCategory === cat.id ? 'text-white' : 'text-dark-400 hover:text-white'}`}>
+                  {cat.name}
+                </button>
+              ))}
+            </nav>
+          </div>
+          <div className="flex items-center gap-4">
+            <button onClick={() => setCartOpen(true)} className="relative p-2 text-dark-300 hover:text-white transition-colors">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-white text-dark-950 text-xs font-bold rounded-full flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+        <div className="md:hidden flex px-4 pb-3 gap-3 overflow-x-auto">
+          {categories.map((cat) => (
+            <button key={cat.id} onClick={() => setActiveCategory(cat.id)}
+              className={`text-xs tracking-wider whitespace-nowrap px-3 py-1.5 rounded-full border transition-colors ${activeCategory === cat.id ? 'bg-white text-dark-950 border-white' : 'border-dark-700 text-dark-400 hover:text-white'}`}>
+              {cat.name}
+            </button>
+          ))}
         </div>
       </header>
 
-      {list.length > 0 && (
-        <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>
-          {[
-            { label: 'Total Products', value: total, color: '#60a5fa' },
-            { label: 'Synced', value: synced, color: '#4ade80' },
-            { label: 'Failed', value: failed, color: '#f87171' },
-            { label: 'Avg Margin', value: avgMargin != null ? `${avgMargin.toFixed(1)}%` : '—', color: '#fbbf24' },
-          ].map((stat) => (
-            <div key={stat.label} style={{
-              background: '#141414', borderRadius: 8, border: '1px solid #1f1f1f',
-              padding: '12px 20px', minWidth: 140,
-            }}>
-              <div style={{ fontSize: 12, color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{stat.label}</div>
-              <div style={{ fontSize: 28, fontWeight: 600, color: stat.color, marginTop: 4 }}>{stat.value}</div>
-            </div>
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h2 className="text-3xl md:text-4xl font-light tracking-tight text-white">{categories.find((c) => c.id === activeCategory)?.name || 'All'}</h2>
+          <p className="text-dark-400 text-sm mt-1">{filtered.length} products</p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+          {filtered.map((product) => (
+            <ProductCard key={product.id} product={product} onAddToCart={addToCart} />
           ))}
         </div>
-      )}
+      </main>
 
-      <div style={{ overflowX: 'auto', borderRadius: 8, border: '1px solid #1f1f1f' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
-          <thead>
-            <tr style={{ background: '#141414', borderBottom: '1px solid #1f1f1f' }}>
-              <th style={th}>Product</th>
-              <th style={th}>Raw Price</th>
-              <th style={th}>Our Price</th>
-              <th style={th}>Margin</th>
-              <th style={th}>Status</th>
-              <th style={th}>Updated</th>
-            </tr>
-          </thead>
-          <tbody>
-            {list.length === 0 ? (
-              <tr>
-                <td colSpan={6} style={{ padding: 32, textAlign: 'center', color: '#666' }}>
-                  No products yet. Add one via{' '}
-                  <code style={{ background: '#1f1f1f', padding: '2px 6px', borderRadius: 4 }}>
-                    POST /api/queue/scrape
-                  </code>
-                </td>
-              </tr>
-            ) : (
-              list.map((p) => (
-                <tr key={p.id} style={{ borderBottom: '1px solid #1f1f1f' }}>
-                  <td style={td}>
-                    <div style={{
-                      maxWidth: 250, overflow: 'hidden', textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                    }}>
-                      {p.product_name ?? '—'}
-                    </div>
-                    <div style={{ fontSize: 12, color: '#666', marginTop: 2 }}>
-                      {p.amazon_url.replace(/^https?:\/\//, '').slice(0, 40)}...
-                    </div>
-                  </td>
-                  <td style={td}>{p.raw_price != null ? `$${p.raw_price}` : '—'}</td>
-                  <td style={td}>{p.our_price != null ? `$${p.our_price}` : '—'}</td>
-                  <td style={td}>
-                    {p.raw_price && p.our_price
-                      ? `${((p.raw_price - p.our_price) / p.raw_price * 100).toFixed(1)}%`
-                      : '—'}
-                  </td>
-                  <td style={td}>
-                    <span style={{ color: statusColor[p.sync_status] ?? '#888', fontWeight: 500 }}>
-                      {p.sync_status}
-                    </span>
-                  </td>
-                  <td style={td}>{new Date(p.updated_at).toLocaleDateString()}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+      <footer className="border-t border-dark-800 py-8 mt-16">
+        <div className="max-w-7xl mx-auto px-4 text-center text-dark-500 text-xs tracking-wider">
+          <p className="font-bold text-dark-300 mb-2">ELITE</p>
+          <p>Premium Fashion 2026. All rights reserved.</p>
+        </div>
+      </footer>
+
+      <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} cart={cart} onUpdateQty={updateQty} total={cartTotal} />
     </div>
   )
-}
-
-const th: React.CSSProperties = {
-  padding: '10px 16px',
-  textAlign: 'left',
-  fontWeight: 500,
-  color: '#888',
-  fontSize: 12,
-  textTransform: 'uppercase',
-  letterSpacing: '0.05em',
-}
-
-const td: React.CSSProperties = {
-  padding: '12px 16px',
-  whiteSpace: 'nowrap',
 }
