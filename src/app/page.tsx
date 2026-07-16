@@ -8,6 +8,7 @@ import { ProductSection } from '@/app/components/sections/ProductSection'
 import { BrandStory } from '@/app/components/sections/BrandStory'
 import { CartDrawer } from '@/app/components/CartDrawer'
 import { Footer } from '@/app/components/Footer'
+import { AnimatedBackground, FloatingParticles } from '@/app/components/AnimatedBackground'
 
 export default function Home() {
   const { open, setOpen, items, updateQuantity, removeItem, count } = useCart()
@@ -20,16 +21,20 @@ export default function Home() {
   const accessories = products.filter((p) => p.category === 'accessories')
 
   return (
-    <div className="min-h-screen">
-      <Navbar cartCount={count} onCartOpen={() => setOpen(true)} />
-      <Hero />
-      <ProductSection products={featured} tag={t.sections.featured.tag} title={t.sections.featured.title} accent={t.sections.featured.accent} desc={t.sections.featured.desc} limit={4} />
-      <ProductSection products={newArrivals} tag={t.sections.newArrivals.tag} title={t.sections.newArrivals.title} accent={t.sections.newArrivals.accent} desc={t.sections.newArrivals.desc} limit={4} />
-      <ProductSection products={bestsellers} tag={t.sections.bestsellers.tag} title={t.sections.bestsellers.title} accent={t.sections.bestsellers.accent} desc={t.sections.bestsellers.desc} limit={4} />
-      <ProductSection products={hoodies} tag={t.sections.hoodies.tag} title={t.sections.hoodies.title} accent={t.sections.hoodies.accent} desc={t.sections.hoodies.desc} limit={4} />
-      <ProductSection products={accessories} tag={t.sections.accessories.tag} title={t.sections.accessories.title} accent={t.sections.accessories.accent} desc={t.sections.accessories.desc} limit={4} />
-      <BrandStory t={t.sections.story} />
-      <Footer />
+    <div className="min-h-screen relative">
+      <AnimatedBackground />
+      <FloatingParticles />
+      <div className="relative z-10">
+        <Navbar cartCount={count} onCartOpen={() => setOpen(true)} />
+        <Hero />
+        <ProductSection products={featured} tag={t.sections.featured.tag} title={t.sections.featured.title} accent={t.sections.featured.accent} desc={t.sections.featured.desc} limit={4} />
+        <ProductSection products={newArrivals} tag={t.sections.newArrivals.tag} title={t.sections.newArrivals.title} accent={t.sections.newArrivals.accent} desc={t.sections.newArrivals.desc} limit={4} />
+        <ProductSection products={bestsellers} tag={t.sections.bestsellers.tag} title={t.sections.bestsellers.title} accent={t.sections.bestsellers.accent} desc={t.sections.bestsellers.desc} limit={4} />
+        <ProductSection products={hoodies} tag={t.sections.hoodies.tag} title={t.sections.hoodies.title} accent={t.sections.hoodies.accent} desc={t.sections.hoodies.desc} limit={4} />
+        <ProductSection products={accessories} tag={t.sections.accessories.tag} title={t.sections.accessories.title} accent={t.sections.accessories.accent} desc={t.sections.accessories.desc} limit={4} />
+        <BrandStory t={t.sections.story} />
+        <Footer />
+      </div>
       <CartDrawer
         open={open} onClose={() => setOpen(false)} items={items}
         onUpdateQuantity={(id, qty) => { const i = items.find((x) => x.id === id); if (i) updateQuantity(id, i.selectedSize, i.selectedColor, qty) }}
