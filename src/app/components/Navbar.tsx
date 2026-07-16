@@ -2,12 +2,14 @@
 import { useEffect, useState } from 'react'
 import { useTheme } from '@/lib/contexts/theme-context'
 import { useAuth } from '@/lib/contexts/auth-context'
-import { ShoppingBag, User, Shield, LogOut, Sun, Moon } from 'lucide-react'
+import { useLocale } from '@/lib/contexts/locale-context'
+import { ShoppingBag, User, Shield, LogOut, Sun, Moon, Globe } from 'lucide-react'
 import Link from 'next/link'
 
 export function Navbar({ cartCount, onCartOpen }: { cartCount: number; onCartOpen: () => void }) {
   const { theme, toggle } = useTheme()
   const { user, logout } = useAuth()
+  const { t, dir, locale, toggle: toggleLocale } = useLocale()
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
@@ -18,13 +20,12 @@ export function Navbar({ cartCount, onCartOpen }: { cartCount: number; onCartOpe
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled ? 'backdrop-blur-xl' : ''
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'backdrop-blur-xl' : ''}`}
       style={{
         background: scrolled ? 'color-mix(in srgb, var(--bg) 85%, transparent)' : 'transparent',
         borderBottom: scrolled ? '1px solid var(--border)' : '1px solid transparent',
       }}
+      dir={dir}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3 group">
@@ -37,7 +38,7 @@ export function Navbar({ cartCount, onCartOpen }: { cartCount: number; onCartOpe
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
-          {['Collection', 'New Arrivals', 'Sale'].map((item) => (
+          {[t.nav.collection, t.nav.arrivals, t.nav.sale].map((item) => (
             <a key={item} href="#products"
               className="text-sm tracking-wider uppercase transition-colors relative group"
               style={{ color: 'var(--text-secondary)' }}>
@@ -52,9 +53,15 @@ export function Navbar({ cartCount, onCartOpen }: { cartCount: number; onCartOpe
             <Link href="/admin"
               className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all hover:scale-105"
               style={{ color: 'var(--accent)', background: 'var(--accent-muted)' }}>
-              <Shield size={14} /> Dashboard
+              <Shield size={14} /> {t.nav.dashboard}
             </Link>
           )}
+          <button onClick={toggleLocale}
+            className="p-2.5 rounded-xl transition-all hover:scale-105 flex items-center gap-1 text-xs font-medium"
+            style={{ color: 'var(--text-secondary)' }}>
+            <Globe size={16} />
+            <span className="hidden sm:inline">{locale === 'en' ? 'AR' : 'EN'}</span>
+          </button>
           <button onClick={toggle} className="p-2.5 rounded-xl transition-all hover:scale-105" style={{ color: 'var(--text-secondary)' }}>
             {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
           </button>
