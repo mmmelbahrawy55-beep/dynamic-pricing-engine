@@ -106,7 +106,7 @@ export function ProductCard({ product }: { product: Product }) {
 export function ProductGrid({ products }: { products: Product[] }) {
   const [category, setCategory] = useState('All')
   const filtered = category === 'All' ? products : products.filter((p) => p.category === category)
-  const [visible, setVisible] = useState(8)
+  const [visible, setVisible] = useState(12)
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
@@ -114,7 +114,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
         {CATEGORIES.map((cat) => (
           <button
             key={cat}
-            onClick={() => { setCategory(cat); setVisible(8) }}
+            onClick={() => { setCategory(cat); setVisible(12) }}
             className="px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all"
             style={{
               background: category === cat ? 'var(--accent)' : 'var(--bg-elevated)',
@@ -133,7 +133,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
       {visible < filtered.length && (
         <div className="flex justify-center mt-10">
           <button
-            onClick={() => setVisible((c) => c + 8)}
+            onClick={() => setVisible((c) => c + 12)}
             className="px-8 py-3 rounded-xl text-sm font-medium transition-all"
             style={{ border: '1px solid var(--border)', color: 'var(--text-secondary)' }}
           >
