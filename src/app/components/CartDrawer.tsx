@@ -24,14 +24,15 @@ export function CartDrawer({
     <>
       {open && <div className="fixed inset-0 z-40 backdrop-blur-sm" style={{ background: 'var(--overlay)' }} onClick={onClose} />}
       <div
-        className="fixed top-0 right-0 h-full w-full max-w-lg z-50 transform transition-all duration-500 ease-out"
+        className="fixed top-0 h-full w-full max-w-lg z-50"
         dir={dir}
         style={{
           background: 'var(--bg)',
           borderLeft: dir === 'ltr' ? '1px solid var(--border)' : 'none',
           borderRight: dir === 'rtl' ? '1px solid var(--border)' : 'none',
+          transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
           transform: open ? 'translateX(0)' : `translateX(${dir === 'ltr' ? '100%' : '-100%'})`,
-          [dir === 'ltr' ? 'right' : 'left']: 0,
+          ...(dir === 'ltr' ? { right: 0 } : { left: 0 }),
         }}
       >
         <div className="flex flex-col h-full">
