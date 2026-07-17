@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useRef } from 'react'
 import { useLocale } from '@/lib/contexts/locale-context'
+import { useTheme } from '@/lib/contexts/theme-context'
 
 function MarqueeTicker() {
   const items = ['FREE SHIPPING OVER $150', '30-DAY RETURNS', 'HAND-FINISHED QUALITY', 'NEW SUMMER DROP', 'SUSTAINABLE FABRICS', 'LIMITED EDITION']
@@ -20,6 +21,7 @@ function MarqueeTicker() {
 
 export function Hero() {
   const { t, dir } = useLocale()
+  const { theme } = useTheme()
   const parallaxRef = useRef<HTMLDivElement>(null)
   const textRef = useRef<HTMLDivElement>(null)
 
@@ -37,17 +39,31 @@ export function Hero() {
     return () => window.removeEventListener('scroll', handle)
   }, [])
 
+  const isDark = theme === 'dark'
+
   return (
     <section className="relative min-h-[95vh] flex flex-col justify-center overflow-hidden" dir={dir}>
       {/* Animated background */}
       <div ref={parallaxRef} className="absolute inset-0">
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, var(--bg) 0%, #0a0a0a 30%, #1a0f0a 60%, var(--bg) 100%)' }} />
+        <div className="absolute inset-0" style={{
+          background: isDark
+            ? 'linear-gradient(135deg, #000000 0%, #0a0a0a 30%, #1a0f0a 60%, #000000 100%)'
+            : 'linear-gradient(135deg, #f8f6f3 0%, #f0ece6 30%, #e8dfd4 60%, #f8f6f3 100%)'
+        }} />
         {/* Grid pattern */}
-        <div className="absolute inset-0 opacity-[0.03]"
-          style={{ backgroundImage: 'linear-gradient(var(--accent) 1px, transparent 1px), linear-gradient(90deg, var(--accent) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+        <div className="absolute inset-0" style={{
+          opacity: isDark ? 0.03 : 0.04,
+          backgroundImage: isDark
+            ? 'linear-gradient(rgba(212,163,115,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(212,163,115,0.5) 1px, transparent 1px)'
+            : 'linear-gradient(rgba(184,134,11,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(184,134,11,0.3) 1px, transparent 1px)',
+          backgroundSize: '60px 60px'
+        }} />
         {/* Radial glows */}
-        <div className="absolute inset-0"
-          style={{ background: 'radial-gradient(ellipse 800px 600px at 25% 40%, rgba(212,163,115,0.07) 0%, transparent 70%), radial-gradient(ellipse 600px 400px at 75% 60%, rgba(212,163,115,0.04) 0%, transparent 70%)' }} />
+        <div className="absolute inset-0" style={{
+          background: isDark
+            ? 'radial-gradient(ellipse 800px 600px at 25% 40%, rgba(212,163,115,0.07) 0%, transparent 70%), radial-gradient(ellipse 600px 400px at 75% 60%, rgba(212,163,115,0.04) 0%, transparent 70%)'
+            : 'radial-gradient(ellipse 800px 600px at 25% 40%, rgba(184,134,11,0.06) 0%, transparent 70%), radial-gradient(ellipse 600px 400px at 75% 60%, rgba(184,134,11,0.03) 0%, transparent 70%)'
+        }} />
       </div>
 
       {/* Content */}
@@ -66,7 +82,7 @@ export function Hero() {
             style={{
               color: 'var(--accent)',
               animation: 'hero-text-reveal 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both',
-              textShadow: '0 0 80px rgba(212,163,115,0.3)',
+              textShadow: isDark ? '0 0 80px rgba(212,163,115,0.3)' : '0 0 80px rgba(184,134,11,0.2)',
             }}>
             {t.hero.title2}
           </span>
@@ -75,7 +91,7 @@ export function Hero() {
           </span>
         </h1>
 
-        <p className="text-base sm:text-lg max-w-xl mx-auto mb-12 leading-relaxed" style={{ color: 'var(--text-muted)', animation: 'blur-in 1s cubic-bezier(0.16, 1, 0.3, 1) 0.7s both' }}>
+        <p className="text-base sm:text-lg max-w-xl mx-auto mb-12 leading-relaxed" style={{ color: 'var(--text-secondary)', animation: 'blur-in 1s cubic-bezier(0.16, 1, 0.3, 1) 0.7s both' }}>
           {t.hero.desc}
         </p>
 
@@ -88,8 +104,8 @@ export function Hero() {
               style={{ background: 'linear-gradient(135deg, var(--accent-hover), var(--accent))' }} />
           </a>
           <a href="#products"
-            className="px-10 py-4 rounded-xl text-sm tracking-wider uppercase font-medium transition-all duration-300 hover:scale-105 hover:bg-white/5"
-            style={{ border: '1px solid var(--border)', color: 'var(--text-secondary)' }}>
+            className="px-10 py-4 rounded-xl text-sm tracking-wider uppercase font-medium transition-all duration-300 hover:scale-105"
+            style={{ border: '1px solid var(--border)', color: 'var(--text-secondary)', background: isDark ? 'transparent' : 'rgba(255,255,255,0.5)' }}>
             {t.hero.lookbook}
           </a>
         </div>

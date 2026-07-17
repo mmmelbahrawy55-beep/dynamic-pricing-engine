@@ -1,9 +1,12 @@
 'use client'
 import Link from 'next/link'
 import { useLocale } from '@/lib/contexts/locale-context'
+import { useTheme } from '@/lib/contexts/theme-context'
 
 export function Footer() {
   const { t, dir, locale } = useLocale()
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
   const [shop, company, support] = locale === 'en'
     ? [
       ['All Products', 'Hoodies', 'T-Shirts', 'Jackets', 'Accessories', 'Sale'],

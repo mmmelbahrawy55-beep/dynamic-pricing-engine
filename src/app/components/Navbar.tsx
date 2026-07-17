@@ -11,6 +11,7 @@ export function Navbar({ cartCount, onCartOpen }: { cartCount: number; onCartOpe
   const { user, logout } = useAuth()
   const { t, dir, locale, toggle: toggleLocale } = useLocale()
   const [scrolled, setScrolled] = useState(false)
+  const isDark = theme === 'dark'
 
   useEffect(() => {
     const handle = () => setScrolled(window.scrollY > 30)
@@ -22,7 +23,9 @@ export function Navbar({ cartCount, onCartOpen }: { cartCount: number; onCartOpe
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'backdrop-blur-xl' : ''}`}
       style={{
-        background: scrolled ? 'color-mix(in srgb, var(--bg) 85%, transparent)' : 'transparent',
+        background: scrolled
+          ? isDark ? 'rgba(0,0,0,0.85)' : 'rgba(248,246,243,0.85)'
+          : 'transparent',
         borderBottom: scrolled ? '1px solid var(--border)' : '1px solid transparent',
       }}
       dir={dir}
@@ -63,7 +66,7 @@ export function Navbar({ cartCount, onCartOpen }: { cartCount: number; onCartOpe
             <span className="hidden sm:inline">{locale === 'en' ? 'AR' : 'EN'}</span>
           </button>
           <button onClick={toggle} className="p-2.5 rounded-xl transition-all hover:scale-105" style={{ color: 'var(--text-secondary)' }}>
-            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            {isDark ? <Sun size={18} /> : <Moon size={18} />}
           </button>
           {user ? (
             <button onClick={logout} className="p-2.5 rounded-xl transition-all hover:scale-105 hidden sm:block" style={{ color: 'var(--text-secondary)' }}>
